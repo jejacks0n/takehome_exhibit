@@ -25,6 +25,31 @@ module Takehome
 
     # Eager load code on boot.
     config.eager_load = true
+
+    config.consider_all_requests_local = true
+
+    # Ensure our datastore is migrated.
+    config.after_initialize do
+      ActiveRecord::Base.connection.execute(<<~SQL)
+        CREATE TABLE devices (
+            id TEXT PRIMARY KEY,
+            latest_timestamp DATETIME,
+            cumulative_count INTEGER
+        );
+
+        CREATE TABLE readings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            device_id TEXT NOT NULL,
+
+            count INTEGER,
+            timestamp STRING,
+
+            FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX idx_readings_device_id ON readings(device_id);
+      SQL
+    end
   end
 end
 
