@@ -4,10 +4,14 @@ require "bundler/setup" # Set up gems listed in the Gemfile.
 
 require "rails"
 require "action_controller/railtie"
+require "active_model/railtie"
+require "active_record/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+
+ENV['DATABASE_URL'] = 'sqlite::memory:'
 
 module Takehome
   class Application < Rails::Application
