@@ -1,14 +1,18 @@
 class ReadingsController < ActionController::API
   rescue_from ActionController::ParameterMissing do
-    render json: { error: "Invalid parameters" }, status: :unprocessable_content
+    render json: {error: "Invalid parameters"}, status: :unprocessable_content
   end
 
   def create
     cache_key = "device_#{permitted_params[:id]}"
     Array(permitted_params[:readings]).each do |reading|
       timestamp = reading[:timestamp]
-      reading_time = Time.parse(timestamp) rescue next # skip invalid timestamps
       count = reading[:count].to_i # ensure count values are integers
+      reading_time = begin
+        Time.parse(timestamp)
+      rescue
+        next # skip invalid timestamps
+      end
 
       Rails.cache.fetch("#{cache_key}:#{timestamp}") do
         Rails.cache.increment("#{cache_key}:cumulative_count", count)
@@ -23,7 +27,7 @@ class ReadingsController < ActionController::API
       end
     end
 
-    render json: { message: "Readings created" }, status: :created
+    render json: {message: "Readings created"}, status: :created
   end
 
   private

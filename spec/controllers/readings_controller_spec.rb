@@ -17,8 +17,8 @@ RSpec.describe ReadingsController, type: :controller do
       {
         id: device_id,
         readings: [
-          { timestamp: "2021-09-29T16:08:15+01:00", count: 5 },
-          { timestamp: "2021-09-29T16:09:15+01:00", count: 6 }
+          {timestamp: "2021-09-29T16:08:15+01:00", count: 5},
+          {timestamp: "2021-09-29T16:09:15+01:00", count: 6}
         ]
       }
     end
@@ -31,8 +31,8 @@ RSpec.describe ReadingsController, type: :controller do
 
         expect(cached_data(:cumulative_count)).to eq(11)
         expect(cached_data(:latest_timestamp)).to eq(Time.parse("2021-09-29T16:09:15+01:00"))
-        expect(cached_data('2021-09-29T16:08:15+01:00')).to eq(5)
-        expect(cached_data('2021-09-29T16:09:15+01:00')).to eq(6)
+        expect(cached_data("2021-09-29T16:08:15+01:00")).to eq(5)
+        expect(cached_data("2021-09-29T16:09:15+01:00")).to eq(6)
       end
 
       it "ignores duplicate readings" do
@@ -43,12 +43,12 @@ RSpec.describe ReadingsController, type: :controller do
       end
 
       it "updates existing device data" do
-        post :create, params: valid_attributes.merge(readings: [{ timestamp: "2021-09-29T16:08:15+01:00", count: 5 }])
+        post :create, params: valid_attributes.merge(readings: [{timestamp: "2021-09-29T16:08:15+01:00", count: 5}])
 
         expect(cached_data(:cumulative_count)).to eq(5)
         expect(cached_data(:latest_timestamp)).to eq(Time.parse("2021-09-29T16:08:15+01:00"))
 
-        post :create, params: valid_attributes.merge(readings: [{ timestamp: "2021-09-29T16:09:15+01:00", count: 6 }])
+        post :create, params: valid_attributes.merge(readings: [{timestamp: "2021-09-29T16:09:15+01:00", count: 6}])
 
         expect(cached_data(:cumulative_count)).to eq(11)
         expect(cached_data(:latest_timestamp)).to eq(Time.parse("2021-09-29T16:09:15+01:00"))
@@ -66,7 +66,7 @@ RSpec.describe ReadingsController, type: :controller do
 
     context "with invalid params" do
       it "responds with an error message (422)" do
-        post :create, params: { }
+        post :create, params: {}
 
         expect(response).to have_http_status(:unprocessable_content)
 
@@ -77,13 +77,13 @@ RSpec.describe ReadingsController, type: :controller do
 
     context "with bad data" do
       it "doesn't store anything if it's not an array" do
-        post :create, params: { id: device_id, readings: "_bad_readings_" }
+        post :create, params: {id: device_id, readings: "_bad_readings_"}
 
         expect(cached_data(:cumulative_count)).to eq(nil)
       end
 
       it "doesn't count readings with invalid timestamps" do
-        valid_attributes[:readings].unshift({ timestamp: "_invalid_timestamp_", count: 10 })
+        valid_attributes[:readings].unshift({timestamp: "_invalid_timestamp_", count: 10})
 
         post :create, params: valid_attributes
 
@@ -91,12 +91,12 @@ RSpec.describe ReadingsController, type: :controller do
       end
 
       it "handles invalid count readings" do
-        valid_attributes[:readings].unshift({ timestamp: "2021-09-29T16:10:15+01:00", count: 'm' })
+        valid_attributes[:readings].unshift({timestamp: "2021-09-29T16:10:15+01:00", count: "m"})
 
         post :create, params: valid_attributes
 
         expect(cached_data(:cumulative_count)).to eq(11)
-        expect(cached_data('2021-09-29T16:10:15+01:00')).to eq(0)
+        expect(cached_data("2021-09-29T16:10:15+01:00")).to eq(0)
       end
     end
   end
