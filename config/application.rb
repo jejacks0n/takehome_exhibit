@@ -58,4 +58,5 @@ Rails.application.initialize!
 
 # Draw the routes for the application.
 Rails.application.routes.draw do
+  post "readings", to: "readings#create"
 end
