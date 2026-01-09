@@ -28,8 +28,10 @@ module Takehome
 
     config.consider_all_requests_local = true
 
-    # Ensure our datastore is migrated.
-    config.after_initialize do
+    # Ensure our datastore is initialized.
+    config.after_initialize { initialize_datastore } unless Rails.env.test?
+
+    def initialize_datastore
       ActiveRecord::Base.connection.execute(<<~SQL)
         CREATE TABLE devices (
             id TEXT PRIMARY KEY,
