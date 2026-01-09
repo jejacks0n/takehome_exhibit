@@ -30,3 +30,49 @@ And you can run the specs with the following:
 ```shell
 docker run takehome rspec
 ```
+
+## Project Notes & Architectural Decisions
+
+**Technology Choice & Concurrency**
+
+I chose Rails to align with the Brightwheel stack, though this specific problem set, of handling high-concurrency shared
+state without a persistent database, actually maps very well to Elixir’s strengths. In an Elixir environment, ETS
+(Erlang Term Storage) would be a natural fit here. That said, I enjoyed tackling these constraints within the Ruby
+ecosystem too.
+
+**Data Storage Strategy**
+
+I initially explored using an in-memory (`:memory:`) SQLite database, as it solves several concurrency and race
+condition issues, while offering flexibility for future data modeling and using a persistent datastore. However, I
+ultimately decided that using `ActiveRecord` felt like bypassing the spirit of the exercise. I pivoted to `Rails.cache`
+to stick closer to "pure" Ruby logic and POROs (Plain Old Ruby Objects), accepting the trade-off of managing data
+consistency manually.
+
+**Code Structure & Abstractions**
+
+In a production environment, I would likely encapsulate the caching logic inside a `Device` model to obscure the cache
+details, and handle key generation for persistence and retrieval in the same place. For this submission, I intentionally
+kept that logic within the controllers to maximize readability and ease of review. I viewed this as a balance between
+"Clean Architecture" and YAGNI (You Ain't Gonna Need It) keeping the code trivial until complexity demands otherwise. We
+don't know where we'll want to refactor or optimize towards just yet, but there's obvious areas where this starts to
+arise, like in the cache key creation, which I've included for the sake of this argument specifically.
+
+**API Design**
+
+I considered combining the endpoints into a single controller given their shared concerns, but settled on separating
+them to retain a familiar "RESTful" pattern. I did loosen strict REST enforcement in the route definitions specifically
+to prioritize client-friendliness.
+
+**Asynchronous Processing**
+
+For the `readings#create` action, I experimented with backgrounding the processing using `Thread.new` and
+`Rails.application.executor.wrap` to return an `:accepted` status immediately. While interesting, I omitted it from the
+final submission. It introduced threading complexity that felt premature without clearer requirements on load/latency
+targets, and I genuinely wasn't sure about the impacts of doing it because I've not used that in a production
+implementation.
+
+**Closing Thoughts**
+
+As I’ve progressed in my career, I’ve become less dogmatic about "the one right way" to build a feature. There are many
+valid architectural approaches depending on the specific constraints and goals. I opted here for simplicity and
+readability, providing a solid foundation we can iterate on.
