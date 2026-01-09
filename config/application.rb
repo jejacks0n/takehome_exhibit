@@ -36,5 +36,10 @@ Rails.application.initialize!
 
 # Draw the routes for the application.
 Rails.application.routes.draw do
+  get "devices/:id/latest_timestamp", to: "devices#latest_timestamp"
+  get "devices/:id/cumulative_count", to: "devices#cumulative_count"
+  # I'm leaving this at /readings, but a more proper RESTful route would be
+  # /devices/:id/readings -- but since the structure of the JSON has all the
+  # required information, we can make things nicer for our client consumers.
   post "readings", to: "readings#create"
 end
