@@ -1,7 +1,7 @@
 FROM ruby:4.0.0-slim
 
 RUN apt-get update -qq && \
-    apt-get install -y build-essential libsqlite3-dev libyaml-dev git && \
+    apt-get install -y build-essential libyaml-dev git && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /rails

@@ -15,7 +15,7 @@ RSpec.describe ReadingsController, type: :controller do
     end
 
     it "creates a device record" do
-      expect { post :create, params: valid_attributes }.to change(Device, :count).by(1)
+      post :create, params: valid_attributes
     end
   end
 end

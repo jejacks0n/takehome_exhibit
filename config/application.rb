@@ -4,14 +4,10 @@ require "bundler/setup" # Set up gems listed in the Gemfile.
 
 require "rails"
 require "action_controller/railtie"
-require "active_model/railtie"
-require "active_record/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
-
-ENV['DATABASE_URL'] = 'sqlite::memory:'
 
 module Takehome
   class Application < Rails::Application
@@ -26,32 +22,12 @@ module Takehome
     # Eager load code on boot.
     config.eager_load = true
 
-    config.consider_all_requests_local = true
-
-    # Ensure our datastore is initialized.
-    config.after_initialize { initialize_datastore } unless Rails.env.test?
-
-    def initialize_datastore
-      ActiveRecord::Base.connection.execute(<<~SQL)
-        CREATE TABLE devices (
-            id TEXT PRIMARY KEY,
-            latest_timestamp DATETIME,
-            cumulative_count INTEGER
-        );
-
-        CREATE TABLE readings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            device_id TEXT NOT NULL,
-
-            count INTEGER,
-            timestamp STRING,
-
-            FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE CASCADE
-        );
-
-        CREATE INDEX idx_readings_device_id ON readings(device_id);
-      SQL
-    end
+    # Setup an in memory cache store.
+    # Docs say: This cache has a bounded size specified by the :size options
+    # to the initializer (default is 32Mb). When the cache exceeds the allotted
+    # size, a cleanup will occur which tries to prune the cache down to three
+    # quarters of the maximum size by removing the least recently used entries.
+    config.cache_store = :memory_store
   end
 end
 
