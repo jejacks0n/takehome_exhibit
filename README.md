@@ -31,12 +31,50 @@ And you can run the specs with the following:
 docker run takehome rspec
 ```
 
+## API Documentation
+
+Here are a few curl commands to document, and help you test the API, once you have the app up and running.
+
+### Store Readings (POST)
+
+This sends two readings for a device (not in any particular time order).
+
+Readings with duplicate or invalid timestamps will be ignored.
+Readings with invalid counts will be considered zero values.
+
+```shell
+curl -X POST http://localhost:8000/readings \
+  -H "Content-Type: application/json" \
+  -d '{"id": "36d5658a-6908-479e-887e-a949ec199272", "readings": [{"timestamp": "2021-09-29T16:09:15+01:00", "count": 6}, {"timestamp": "2021-09-29T16:08:15+01:00", "count": 5}]}'
+```
+
+Expected Response: `{"message":"Readings created"}` (Status 202)
+
+### Get Latest Timestamp (GET)
+
+Retrieve the latest timestamp for the device you just updated.
+
+```shell
+curl -X GET http://localhost:8000/devices/36d5658a-6908-479e-887e-a949ec199272/latest_timestamp
+```
+
+Expected Response: `{"latest_timestamp":"2021-09-29T16:09:15+01:00"}`
+
+### Get Cumulative Count (GET)
+
+Retrieve the total count.
+
+```shell
+curl -X GET http://localhost:8000/devices/36d5658a-6908-479e-887e-a949ec199272/cumulative_count
+```
+
+
 ## Project Notes & Architectural Decisions
 
 **Technology Choice & Concurrency**
 
 I chose Rails to align with the Brightwheel stack, though this specific problem set, of handling high-concurrency shared
-state without a persistent database, actually maps very well to Elixir’s strengths. In an Elixir environment, ETS
+state without a persistent database, actually maps very well to Elixir's strengths. In an Elixir environment, ETS
 (Erlang Term Storage) would be a natural fit here. That said, I enjoyed tackling these constraints within the Ruby
 ecosystem too.
 
@@ -73,6 +111,6 @@ implementation.
 
 **Closing Thoughts**
 
-As I’ve progressed in my career, I’ve become less dogmatic about "the one right way" to build a feature. There are many
+As I've progressed in my career, I've become less dogmatic about "the one right way" to build a feature. There are many
 valid architectural approaches depending on the specific constraints and goals. I opted here for simplicity and
-readability, providing a solid foundation we can iterate on.
+readability, providing a foundation we can iterate on.
