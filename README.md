@@ -1,11 +1,12 @@
 Brightwheel Takehome Project
 ============================
 
-Hi, thanks for taking the time to check out this submission. I've provided setup using docker, for ease of setup, and
-for your security (should you actually want to run this on your machine instead of just reading through it.)
+Hi, thanks for taking the time to check out this submission. I've provided a Dockerfile, for ease of setup, and for your
+security (should you actually want to run this on your machine instead of just reading through it.) This assumes you
+have [Docker](https://www.docker.com) installed and running.
 
 It's a Rack app, using Rails. The application, as well as the routes are defined in `application.rb` -- that's it. Then
-we have some controllers. I included puma because I wanted to check concurrency aspects, but yeah, we're only dealing
+we have some controllers. I included Puma because I wanted to check concurrency aspects, but yeah, we're only dealing
 with threads and not workers. Obviously without using a more complex datastore we can't share the data across workers,
 but it is shared across threads.
 
@@ -13,7 +14,7 @@ Let's get started.
 
 ## Setup and running
 
-Setup with docker should be as simple as building an image.
+Setup with Docker should be as simple as building an image.
 
 ```shell
 docker build -t takehome -f ./Dockerfile .
@@ -33,14 +34,15 @@ docker run takehome rspec
 
 ## API Documentation
 
-Here are a few curl commands to document, and help you test the API, once you have the app up and running.
+Here are a few curl commands to help document, and make testing the API easier, once you have the app up and running.
 
 ### Store Readings (POST)
 
-This sends two readings for a device (not in any particular time order).
+This sends two readings for a device (not in any particular chronological order).
 
 Readings with duplicate or invalid timestamps will be ignored.
-Readings with invalid counts will be considered zero values.
+Readings with invalid counts will be considered zero.
+There are currently no rules for the device ids being UUIDv4.
 
 ```shell
 curl -X POST http://localhost:8000/readings \
@@ -75,7 +77,7 @@ curl -X GET http://localhost:8000/devices/36d5658a-6908-479e-887e-a949ec199272/c
 
 I chose Rails to align with the Brightwheel stack, though this specific problem set, of handling high-concurrency shared
 state without a persistent database, actually maps very well to Elixir's strengths. In an Elixir environment, ETS
-(Erlang Term Storage) would be a natural fit here. That said, I enjoyed tackling these constraints within the Ruby
+(Erlang Term Storage) would be a natural fit here. That said, I enjoyed tackling these constraints within the Rails
 ecosystem too.
 
 **Data Storage Strategy**
