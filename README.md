@@ -70,6 +70,7 @@ Retrieve the total count.
 curl -X GET http://localhost:8000/devices/36d5658a-6908-479e-887e-a949ec199272/cumulative_count
 ```
 
+Expected Response: `{"cumulative_count":11}`
 
 ## Project Notes & Architectural Decisions
 
