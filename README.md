@@ -1,6 +1,57 @@
 Takehome Project
 ================
 
+> [!NOTE]
+> This submission failed, and I wasn't moved forward in the interview process.
+>
+> I'm putting this up as an exhibit of how the simplest implementation might not always be the best for a takehome
+> assignment. Even though we all know we could make this implementation as complex as we want, I would ask -- should we?
+>
+> Shouldn't we have a preference for the simplest possible implementation and expand into more complex architectures as
+> needed, instead of anticipating (potentially incorrectly) something we can't know until we form additional information
+> worthy of changing our implementation?
+
+## Thoughts
+
+There's a couple of things I might change after receiving the rejection. I would probably add more validation for the
+device id, and make sure that the reading count wasn't negative. I viewed the project as your ability to understand the
+concurrency implications across threads and instances / workers and also the race conditions that can occur with
+multiple device readings coming in at the same time, and did (what I thought) was enough to account for those cases.
+Maybe I should’ve used a mutex? I'm curious what others can think of. Obviously things like service objects, and models
+to build out the data is an acceptable answer, but the project should be more complex then, because this can be achieved
+very simply without any of that stuff in like ~20 lines of meaningful code.
+
+## Assignment task
+
+Let's create an API that receives device readings, with a couple tertiary endpoints to fetch information that the readings
+can build up for devices. The implementation can't persist to disk and must remain in memory only. The memory should reset
+when the server is reset.
+
+The device readings endpoint is provided with this data structure.
+
+```json
+{
+  "id": "36d5658a-6908-479e-887e-a949ec199272",
+  "readings": [
+    {"timestamp": "2021-09-29T16:09:15+01:00", "count": 6},
+    {"timestamp": "2021-09-29T16:08:15+01:00", "count": 5}
+  ]
+}
+```
+
+The data is comprised of a device id, and an array of readings. Readings have a timestamp and a count. This count can
+represent the number of birds on the fence, or the number of clicks heard -- it's inconsequential to the implementation.
+
+The API should have endpoints to receive the readings, to ask for a cumulative count of readings for a device, and ask
+for the latest timestamp it's received for a given device.
+
+The API shouldn't allow multiple readings for a given device with the same timestamp.
+
+The assignment also includes a request for testing, documenting the setup and API endpoints, and providing your thinking
+and philosophy of your submission. Try to spend no more than 4 hours on the submission.
+
+## Submission intro
+
 Hi, thanks for taking the time to check out this submission. I've provided a Dockerfile, for ease of setup, and for your
 security (should you actually want to run this on your machine instead of just reading through it.) This assumes you
 have [Docker](https://www.docker.com) installed and running.
