@@ -76,7 +76,7 @@ Expected Response: `{"cumulative_count":11}`
 
 **Technology Choice & Concurrency**
 
-I chose Rails to align with the Brightwheel stack, though this specific problem set, of handling high-concurrency shared
+I chose Rails to align with the target stack, though this specific problem set, of handling high-concurrency shared
 state without a persistent database, actually maps very well to Elixir's strengths. In an Elixir environment, ETS
 (Erlang Term Storage) would be a natural fit here. That said, I enjoyed tackling these constraints within the Rails
 ecosystem too.
