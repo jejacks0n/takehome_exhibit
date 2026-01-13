@@ -1,5 +1,5 @@
-Brightwheel Takehome Project
-============================
+Takehome Project
+================
 
 Hi, thanks for taking the time to check out this submission. I've provided a Dockerfile, for ease of setup, and for your
 security (should you actually want to run this on your machine instead of just reading through it.) This assumes you
